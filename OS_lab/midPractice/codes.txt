@@ -1,0 +1,194 @@
+-> if-elif-else
+#!/bin/sh
+
+#shebang line 
+
+#if-else
+
+read -p "Enter a number : " num
+
+if [ $num -gt 0 ];
+then
+	if [ $num -lt 100 ];
+	then
+		echo "Num is < 100  && > 0"
+	else
+		echo "Num is > 100"
+	fi
+elif [ $num -eq 0 ];
+then
+	echo "Num is == 0 "
+else
+	echo "Num is < 0 "
+	
+fi
+
+
+-> logical and , to check readable and executable
+
+#!/bin/bash
+
+FILE="test.sh"
+
+if [[ -r "$FILE" ]]  && [[ -w "$FILE" ]];   #diff syntax if [[ -r "$FILE" && -w "$FILE" ]]
+
+then
+	echo "REadable"
+else
+	echo "Not"
+fi
+
+
+-> string comparison
+#!/bin/bash
+
+read str1
+read str2
+
+if [[ "$str1" == "$str2" ]]; then
+    echo "strings equal"
+elif [[ "$str1" > "$str2" ]]; then
+    echo "str1 > str2"
+else
+    echo "str1 < str2"
+fi
+
+
+
+
+-> printing all arguments that we put using command prompt
+#!/bin/sh
+
+echo "Total arguments: $#"
+
+
+i=1
+for arg in "$@"; do
+    echo "Arg $i: $arg"
+    i=$((i + 1))   #syntax ((i+=1)) || ((i++))
+done
+
+
+-> printing files of a directory
+#!/bin/bash
+
+dir="/home/kirsh_talreja/23K0021"
+
+i=1
+for arg in $(ls $dir);
+do
+    echo " $arg"
+   
+done
+
+
+
+-> function return
+#!/bin/bash
+#declare
+hello(){
+	echo "FUNC $1 $2"
+	echo "FUNC2 $3 $4"
+
+	return $(($3+$4))
+}
+
+#invoke
+hello kirsh 12 13 14
+
+ret=$?
+echo "retuned value : $ret"
+
+
+
+
+-> while loop , with switch case
+#!/bin/bash
+
+while true; do
+    echo "Choose an option:"
+    echo "a = to see the current date"
+    echo "b = to see the current files in the directory"
+    echo "c = to see the current location"
+    echo "q = to quit"
+
+    read -r choice
+
+    case $choice in
+        a) date ;;
+        b) ls ;;
+        c) pwd ;;
+        q) echo "Exiting..."; break ;;  # Allow user to quit
+        *) echo "INVALID INPUT, please try again." ;;
+    esac
+done
+
+
+	
+
+
+-> content of a text file
+#!/bin/bash
+
+file="/home/kirsh_talreja/23K0021/hello.txt"
+
+for f in $(cat $file)
+do
+	echo "Name: $f"
+done
+
+
+if want content of a dir use $(ls $dir)
+
+
+
+
+-> differen syntax of for-loop , using c-style
+
+#!/bin/bash
+
+arr=(1 2 3 4 5 6 )
+
+len=${#arr[*]}
+
+for (( i= 0; i<len ; i++ ))
+do
+	echo "${arr[$i]}"
+done
+
+-> reading from file using while loop
+#!/bin/bash
+
+
+while read file
+do
+	echo "Name : $file"
+	
+done < hello.txt
+
+
+
+
+-> to read data from a CSV (comma seperated file) 
+#!/bin/bash
+
+
+while IFS=',' read name id age
+do
+	echo "Name : $name"
+	echo "Id : $id"
+	echo "Age : $age"
+done < test.csv
+
+
+and to add data in the file
+echo "$name,$id,%age" >> "$test.csv"
+
+-> generate Random Numbers b/w 1 & 6
+#!/bin/bash
+
+nu=$(( RANDOM % 6 + 1 )) 
+echo "Number : $nu"
+
+
+

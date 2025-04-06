@@ -1,0 +1,997 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Linux Commands, Bash Scripting &amp; Examples Cheat Sheet</title>
+<!-- Google Fonts for text -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<!-- Highlight.js CSS for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+<style>
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 20px;
+    background: #f0f4f8; /* Professional blue-gray background */
+    color: #333;
+}
+h1, h2, h3 {
+    text-align: center;
+}
+.section {
+    margin-bottom: 50px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 30px;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+th {
+    color: white;
+    font-size: 1.1em;
+}
+/* Table header colors */
+.file-directory th { background-color: #1E90FF; }
+.memory-usage th { background-color: #32CD32; }
+.cpu-usage th { background-color: #FF6347; }
+.process-management th { background-color: #FFD700; color: black; }
+.user-system th { background-color: #808080; }
+.disk-network th { background-color: #DAA520; }
+.file-compression th { background-color: #9370DB; }
+.help th { background-color: #FF4500; }
+.sorting-piping th { background-color: #4682B4; }
+.date-time th { background-color: #3CB371; }
+.bash-vars th { background-color: #8B0000; }
+
+pre {
+    margin: 0;
+    padding: 10px;
+    background-color: #272822;
+    color: #f8f8f2;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.6; /* Extra whitespace between lines */
+}
+code {
+    font-family: 'Courier New', Courier, monospace;
+}
+/* Container for a code-output pair for one example */
+.example-container {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #000;
+    color: #f8f8f2;
+    border: 1px solid #333;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.example-container .code-box,
+.example-container .output-box {
+    flex: 1;
+    min-width: 300px;
+    padding: 10px;
+}
+.example-container .divider {
+    width: 1px;
+    background-color: #333;
+}
+.example-title {
+    margin: 10px 0 5px;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: 500;
+}
+/* New subheading and description styles for examples */
+.example-subheading {
+    margin: 5px 0;
+    font-size: 1.1em;
+    font-weight: 500;
+    text-align: center;
+    color: #444;
+}
+.example-description {
+    margin: 5px 0 10px;
+    font-size: 0.95em;
+    text-align: center;
+    color: #555;
+}
+/* New grid container for multiple examples */
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    gap: 20px;
+}
+.example-item {
+    /* Each example item contains the title, subheading, description, and its code-output box */
+}
+/* Responsive adjustments for individual code-output pairs */
+@media (max-width: 700px) {
+    .example-container {
+        flex-direction: column;
+    }
+    .example-container .divider {
+        display: none;
+    }
+}
+</style>
+</head>
+<body>
+
+<h1>Linux Commands, Bash Scripting &amp; Examples Cheat Sheet</h1>
+
+<!-- Linux Command Tables -->
+<div class="section">
+<h2>File and Directory Commands</h2>
+<table class="file-directory">
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+<tr><td>pwd</td><td>Show current directory</td></tr>
+<tr><td>ls</td><td>List files and directories</td></tr>
+<tr><td>cd &lt;directory&gt;</td><td>Change directory</td></tr>
+<tr><td>mkdir &lt;directory_name&gt;</td><td>Create a new directory</td></tr>
+<tr><td>rmdir &lt;directory_name&gt;</td><td>Remove a directory</td></tr>
+<tr><td>touch &lt;filename&gt;</td><td>Create a file</td></tr>
+<tr><td>cat &lt;filename&gt;</td><td>View file contents</td></tr>
+<tr><td>cp &lt;source&gt; &lt;destination&gt;</td><td>Copy a file</td></tr>
+<tr><td>mv &lt;source&gt; &lt;destination&gt;</td><td>Move or rename a file</td></tr>
+<tr><td>rm &lt;filename&gt;</td><td>Delete a file</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Memory Usage Commands</h2>
+<table class="memory-usage">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>free -m</td><td>Check memory usage in MB</td></tr>
+<tr><td>free -g</td><td>Check memory usage in GB</td></tr>
+<tr><td>cat /proc/meminfo</td><td>Check detailed memory usage</td></tr>
+<tr><td>ps aux --sort=-%mem | head</td><td>Show memory usage per process</td></tr>
+<tr><td>vmstat 1</td><td>Monitor memory usage live</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>CPU Usage Commands</h2>
+<table class="cpu-usage">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>top</td><td>Check CPU usage</td></tr>
+<tr><td>htop</td><td>Interactive CPU and process monitor</td></tr>
+<tr><td>mpstat</td><td>CPU usage summary</td></tr>
+<tr><td>lscpu</td><td>Check CPU details</td></tr>
+<tr><td>sar -u 1 5</td><td>Monitor CPU usage over time</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Process Management Commands</h2>
+<table class="process-management">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>ps aux</td><td>List running processes</td></tr>
+<tr><td>pstree</td><td>List all processes in tree format</td></tr>
+<tr><td>kill &lt;PID&gt;</td><td>Kill a process by PID</td></tr>
+<tr><td>kill -9 &lt;PID&gt;</td><td>Force kill a process</td></tr>
+<tr><td>pkill &lt;process_name&gt;</td><td>Kill a process by name</td></tr>
+<tr><td>pgrep &lt;process_name&gt;</td><td>Check a specific process by name</td></tr>
+<tr><td>top</td><td>Monitor real-time processes</td></tr>
+<tr><td>ps fax</td><td>Show process hierarchy</td></tr>
+<tr><td>cat /proc/&lt;PID&gt;/status</td><td>Check process details by PID</td></tr>
+<tr><td>netstat -tulnp | grep &lt;port&gt;<br>or<br>ss -tulnp | grep &lt;port&gt;</td><td>Find which process is using a port</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>User and System Information</h2>
+<table class="user-system">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>su &lt;username&gt;</td><td>Switch user</td></tr>
+<tr><td>sudo &lt;command&gt;</td><td>Run command as root</td></tr>
+<tr><td>whoami</td><td>Show current user</td></tr>
+<tr><td>who</td><td>Show active users</td></tr>
+<tr><td>uptime</td><td>Show system uptime</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Disk and Network Commands</h2>
+<table class="disk-network">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>df -h</td><td>Show disk usage</td></tr>
+<tr><td>free -m</td><td>Show memory usage</td></tr>
+<tr><td>find /path -name &lt;filename&gt;</td><td>Find a file</td></tr>
+<tr><td>grep 'text' &lt;filename&gt;</td><td>Search text in a file</td></tr>
+<tr><td>ping &lt;website&gt;</td><td>Check network connectivity</td></tr>
+<tr><td>ifconfig<br>or<br>ip a</td><td>Show IP address (ifconfig is deprecated)</td></tr>
+<tr><td>wget &lt;URL&gt;</td><td>Download files</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>File Compression Commands</h2>
+<table class="file-compression">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>tar -xvf &lt;file.tar&gt;</td><td>Extract tar files</td></tr>
+<tr><td>tar -czvf &lt;file.tar.gz&gt; &lt;directory&gt;</td><td>Compress files to tar.gz</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Help Commands</h2>
+<table class="help">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>man &lt;command&gt;</td><td>Show manual of a command</td></tr>
+<tr><td>history</td><td>Show command history</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Sorting and Piping Commands</h2>
+<table class="sorting-piping">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>sort &lt;filename&gt;</td><td>Sort a file alphabetically</td></tr>
+<tr><td>sort -r &lt;filename&gt;</td><td>Sort a file in reverse order</td></tr>
+<tr><td>sort -n &lt;filename&gt;</td><td>Sort by numeric values</td></tr>
+<tr><td>sort -u &lt;filename&gt;</td><td>Sort and remove duplicates</td></tr>
+<tr><td>command1 | command2</td><td>Use pipe to filter output</td></tr>
+<tr><td>command &gt; output.txt</td><td>Send output to a file</td></tr>
+<tr><td>command &gt;&gt; output.txt</td><td>Append output to a file</td></tr>
+<tr><td>command | grep 'text'</td><td>Use pipe to search text</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>Date and Time Commands</h2>
+<table class="date-time">
+<tr><th>Command</th><th>Description</th></tr>
+<tr><td>date</td><td>Display current date and time</td></tr>
+<tr><td>date '+%Y-%m-%d %H:%M:%S'</td><td>Format date output</td></tr>
+<tr><td>date --date='yesterday'</td><td>Show yesterday’s date</td></tr>
+<tr><td>date --date='tomorrow'</td><td>Show tomorrow’s date</td></tr>
+<tr><td>date -d @&lt;timestamp&gt;</td><td>Convert timestamp to date</td></tr>
+</table>
+</div>
+
+<!-- Bash Scripting Basics -->
+<div class="section">
+<h2>Bash Scripting Basics</h2>
+<h3>Special Environment Variables</h3>
+<table class="bash-vars">
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td>$0</td><td>The name of the script itself</td></tr>
+<tr><td>$1, $2, ...</td><td>Positional parameters (arguments passed to the script)</td></tr>
+<tr><td>$#</td><td>The number of arguments passed to the script</td></tr>
+<tr><td>$@</td><td>All arguments passed to the script as separate words</td></tr>
+<tr><td>$*</td><td>All arguments passed to the script as a single string</td></tr>
+<tr><td>$$</td><td>The process ID (PID) of the current script</td></tr>
+<tr><td>$?</td><td>The exit status of the last executed command</td></tr>
+<tr><td>$_</td><td>The last argument of the previous command</td></tr>
+<tr><td>$!</td><td>The PID of the last background command</td></tr>
+</table>
+</div>
+
+<!-- Bash Scripting Examples (Basic Syntax) -->
+<div class="section">
+<h2>Bash Scripting Examples</h2>
+<div class="examples-grid">
+<div class="example-item">
+<div class="example-title">Printing Script Arguments</div>
+<h4 class="example-subheading">Script Arguments</h4>
+<p class="example-description">This example demonstrates how to print the script name and its arguments using special variables.</p>
+<div class="example-container">
+<div class="code-box">
+<pre><code class="bash">#!/bin/bash
+
+echo "Script name: $0"
+echo "First argument: $1"
+echo "Second argument: $2"
+echo "Number of arguments: $#"
+echo "All arguments: $@"</code></pre>
+</div>
+<div class="divider"></div>
+<div class="output-box">
+<pre><code>Script name: ./myscript.sh
+First argument: hello
+Second argument: world
+Number of arguments: 2
+All arguments: hello world</code></pre>
+</div>
+</div>
+</div>
+
+<div class="example-item">
+<div class="example-title">For Loop</div>
+<h4 class="example-subheading">Loop Iteration</h4>
+<p class="example-description">A simple for loop that iterates from 1 to 5 and prints each iteration.</p>
+<div class="example-container">
+<div class="code-box">
+<pre><code class="bash">for i in {1..5}; do
+echo "Iteration $i"
+done</code></pre>
+</div>
+<div class="divider"></div>
+<div class="output-box">
+<pre><code>Iteration 1
+Iteration 2
+Iteration 3
+Iteration 4
+Iteration 5</code></pre>
+</div>
+</div>
+</div>
+
+<div class="example-item">
+<div class="example-title">While Loop</div>
+<h4 class="example-subheading">Loop with Condition</h4>
+<p class="example-description">Illustrates a while loop that prints a counter until it exceeds 5.</p>
+<div class="example-container">
+<div class="code-box">
+<pre><code class="bash">counter=1
+while [[ $counter -le 5 ]]; do
+    echo "Count: $counter"
+    counter=$((counter+1))
+    done</code></pre>
+    </div>
+    <div class="divider"></div>
+    <div class="output-box">
+    <pre><code>Count: 1
+    Count: 2
+    Count: 3
+    Count: 4
+    Count: 5</code></pre>
+    </div>
+    </div>
+    </div>
+
+    <div class="example-item">
+    <div class="example-title">Until Loop</div>
+    <h4 class="example-subheading">Loop Until Condition Met</h4>
+    <p class="example-description">Uses an until loop to increment a counter until it is greater than 5.</p>
+    <div class="example-container">
+    <div class="code-box">
+    <pre><code class="bash">counter=1
+    until [[ $counter -gt 5 ]]; do
+    echo "Counter: $counter"
+    counter=$((counter+1))
+    done</code></pre>
+    </div>
+    <div class="divider"></div>
+    <div class="output-box">
+    <pre><code>Counter: 1
+    Counter: 2
+    Counter: 3
+    Counter: 4
+    Counter: 5</code></pre>
+    </div>
+    </div>
+    </div>
+
+    <div class="example-item">
+    <div class="example-title">Basic If Statement</div>
+    <h4 class="example-subheading">Simple Condition</h4>
+    <p class="example-description">Checks if 5 is greater than 3 using the extended [[ ]] syntax.</p>
+    <div class="example-container">
+    <div class="code-box">
+    <pre><code class="bash">#!/bin/bash
+    if [[ 5 -gt 3 ]]; then
+        echo "5 is greater than 3"
+        fi</code></pre>
+        </div>
+        <div class="divider"></div>
+        <div class="output-box">
+        <pre><code>5 is greater than 3</code></pre>
+        </div>
+        </div>
+        </div>
+
+        <div class="example-item">
+        <div class="example-title">If-Else Statement</div>
+        <h4 class="example-subheading">Conditional Branching</h4>
+        <p class="example-description">Demonstrates an if-else condition using [[ ]] for flexible syntax.</p>
+        <div class="example-container">
+        <div class="code-box">
+        <pre><code class="bash">#!/bin/bash
+        if [[ 2 -gt 3 ]]; then
+            echo "2 is greater than 3"
+            else
+                echo "2 is not greater than 3"
+                fi</code></pre>
+                </div>
+                <div class="divider"></div>
+                <div class="output-box">
+                <pre><code>2 is not greater than 3</code></pre>
+                </div>
+                </div>
+                </div>
+
+                <div class="example-item">
+                <div class="example-title">If-Elif-Else Statement</div>
+                <h4 class="example-subheading">Multi-Branch Decision</h4>
+                <p class="example-description">Handles multiple conditions using if, elif, and else with [[ ]] syntax.</p>
+                <div class="example-container">
+                <div class="code-box">
+                <pre><code class="bash">#!/bin/bash
+                if [[ 2 -gt 3 ]]; then
+                    echo "2 is greater than 3"
+                    elif [[ 2 -eq 2 ]]; then
+                    echo "2 equals 2"
+                    else
+                        echo "Neither condition met"
+                        fi</code></pre>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="output-box">
+                        <pre><code>2 equals 2</code></pre>
+                        </div>
+                        </div>
+                        </div>
+
+                        <div class="example-item">
+                        <div class="example-title">Logical Operators in If Conditions</div>
+                        <h4 class="example-subheading">Combining Conditions</h4>
+                        <p class="example-description">Uses && and || within [[ ]] to build complex conditional expressions.</p>
+                        <div class="example-container">
+                        <div class="code-box">
+                        <pre><code class="bash">#!/bin/bash
+                        a=7
+                        if [[ $a -gt 5 && $a -lt 10 ]]; then
+                            echo "a is between 5 and 10"
+                            else
+                                echo "a is not between 5 and 10"
+                                fi
+
+                                b=3
+                                if [[ $b -lt 2 || $b -gt 5 ]]; then
+                                    echo "b is either less than 2 or greater than 5"
+                                    else
+                                        echo "b is between 2 and 5"
+                                        fi</code></pre>
+                                        </div>
+                                        <div class="divider"></div>
+                                        <div class="output-box">
+                                        <pre><code>a is between 5 and 10
+                                        b is between 2 and 5</code></pre>
+                                        </div>
+                                        </div>
+                                        </div>
+
+                                        <div class="example-item">
+                                        <div class="example-title">File Existence Check</div>
+                                        <h4 class="example-subheading">File Test</h4>
+                                        <p class="example-description">Verifies if "filename.txt" exists using the [[ -f ]] test.</p>
+                                        <div class="example-container">
+                                        <div class="code-box">
+                                        <pre><code class="bash">#!/bin/bash
+                                        if [[ -f "filename.txt" ]]; then
+                                            echo "File exists."
+                                            else
+                                                echo "File does not exist."
+                                                fi</code></pre>
+                                                </div>
+                                                <div class="divider"></div>
+                                                <div class="output-box">
+                                                <pre><code>File exists.</code></pre>
+                                                </div>
+                                                </div>
+                                                </div>
+
+                                                <div class="example-item">
+                                                <div class="example-title">Iterating Over Files</div>
+                                                <h4 class="example-subheading">Directory Loop</h4>
+                                                <p class="example-description">Loops through files in a directory and prints each filename.</p>
+                                                <div class="example-container">
+                                                <div class="code-box">
+                                                <pre><code class="bash">#!/bin/bash
+                                                for file in /path/to/directory/*; do
+                                                    echo "Processing $file"
+                                                    done</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Processing /path/to/directory/file1.txt
+                                                    Processing /path/to/directory/file2.txt
+                                                    Processing /path/to/directory/file3.txt</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">Reading User Input</div>
+                                                    <h4 class="example-subheading">Input Handling</h4>
+                                                    <p class="example-description">Demonstrates how to prompt for and read user input.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+                                                    echo "Enter your name:"
+                                                    read name
+                                                    echo "Hello, $name!"</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Enter your name:
+                                                    John
+                                                    Hello, John!</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">Using a Case Statement</div>
+                                                    <h4 class="example-subheading">Case Handling</h4>
+                                                    <p class="example-description">Uses a case statement to handle different inputs from the user.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+                                                    read -p "Enter a number between 1 and 3: " num
+                                                    case $num in
+                                                    1)
+                                                    echo "You entered one."
+                                                    ;;
+                                                    2)
+                                                    echo "You entered two."
+                                                    ;;
+                                                    3)
+                                                    echo "You entered three."
+                                                    ;;
+                                                    *)
+                                                    echo "Invalid input."
+                                                    ;;
+                                                    esac</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Enter a number between 1 and 3: 2
+                                                    You entered two.</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <!-- Linux Command Examples in Bash Scripts -->
+                                                    <div class="section">
+                                                    <h2>Linux Command Examples in Bash Scripts</h2>
+                                                    <div class="examples-grid">
+                                                    <div class="example-item">
+                                                    <div class="example-title">File &amp; Directory Commands</div>
+                                                    <h4 class="example-subheading">File Operations</h4>
+                                                    <p class="example-description">Combines multiple file operations like listing, creating, writing, copying, renaming, and removing files/directories.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Current Directory: $(pwd)"
+                                                    echo "Listing files:"
+                                                    ls
+
+                                                    echo "Creating directory 'demo_dir'..."
+                                                    mkdir demo_dir
+
+                                                    echo "Creating file 'demo_file.txt'..."
+                                                    touch demo_file.txt
+
+                                                    echo "Writing to file..."
+                                                    echo "Hello, Linux!" > demo_file.txt
+
+                                                    echo "File content:"
+                                                    cat demo_file.txt
+
+                                                    echo "Copying file to 'demo_file_copy.txt'..."
+                                                    cp demo_file.txt demo_file_copy.txt
+
+                                                    echo "Renaming 'demo_file_copy.txt' to 'demo_file_renamed.txt'..."
+                                                    mv demo_file_copy.txt demo_file_renamed.txt
+
+                                                    echo "Deleting 'demo_file.txt'..."
+                                                    rm demo_file.txt
+
+                                                    echo "Removing directory 'demo_dir'..."
+                                                    rmdir demo_dir</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Current Directory: /home/user
+                                                    Listing files:
+                                                    file1.txt  file2.txt  script.sh
+                                                    Creating directory 'demo_dir'...
+                                                    Creating file 'demo_file.txt'...
+                                                    Writing to file...
+                                                    File content:
+                                                    Hello, Linux!
+                                                    Copying file to 'demo_file_copy.txt'...
+                                                    Renaming 'demo_file_copy.txt' to 'demo_file_renamed.txt'...
+                                                    Deleting 'demo_file.txt'...
+                                                    Removing directory 'demo_dir'...</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">Memory Usage Commands</div>
+                                                    <h4 class="example-subheading">Memory Monitoring</h4>
+                                                    <p class="example-description">Displays system memory usage details using various commands.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Memory usage in MB:"
+                                                    free -m
+
+                                                    echo "Memory usage in GB:"
+                                                    free -g
+
+                                                    echo "Detailed memory info (first 3 lines):"
+                                                    head -n 3 /proc/meminfo
+
+                                                    echo "Top memory consuming processes:"
+                                                    ps aux --sort=-%mem | head -n 3
+
+                                                    echo "Live memory monitoring (1 sample):"
+                                                    vmstat 1 1</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Memory usage in MB:
+                                                    total        used        free      shared  buff/cache   available
+                                                    Mem:           7982        1024        5000         200         958        6500
+                                                    ...
+                                                    Memory usage in GB:
+                                                    total        used        free
+                                                    Mem:              7          1          5
+                                                    ...
+                                                    Detailed memory info:
+                                                    MemTotal:        7982000 kB
+                                                    MemFree:         5000000 kB
+                                                    MemAvailable:    6500000 kB
+                                                    Top memory consuming processes:
+                                                    user    1234  10.0  5.0 ... /usr/bin/process1
+                                                    user    2345   8.0  4.5 ... /usr/bin/process2
+                                                    user    3456   6.0  3.5 ... /usr/bin/process3
+                                                    Live memory monitoring (1 sample):
+                                                    procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+                                                    r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+                                                    1  0      0 500000  12000  40000    0    0    50   100   80  120 10  5 80  5  0</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">CPU Usage Commands</div>
+                                                    <h4 class="example-subheading">CPU Monitoring</h4>
+                                                    <p class="example-description">Displays CPU details and usage statistics using multiple commands.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Top CPU processes (sample):"
+                                                    top -b -n 1 | head -n 5
+
+                                                    echo "CPU details:"
+                                                    lscpu | head -n 5
+
+                                                    echo "CPU usage summary:"
+                                                    mpstat | head -n 3
+
+                                                    echo "Monitoring CPU usage (sample):"
+                                                    sar -u 1 1</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Top CPU processes (sample):
+                                                    top - 10:00:00 up  2:00,  3 users,  load average: 0.05, 0.10, 0.15
+                                                    Tasks: 200 total,   1 running, 199 sleeping,   0 stopped,   0 zombie
+                                                    ...
+                                                    CPU details:
+                                                    Architecture:          x86_64
+                                                    CPU op-mode(s):        32-bit, 64-bit
+                                                    CPU(s):                8
+                                                    ...
+                                                    CPU usage summary:
+                                                    Linux 5.4.0-42-generic (hostname) 	10/01/2023 	_x86_64_	(8 CPU)
+                                                    ...
+                                                    Monitoring CPU usage (sample):
+                                                    Average:        all    5.0    2.0    90.0    3.0    0.0    0.0</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">Process Management Commands</div>
+                                                    <h4 class="example-subheading">Process Handling</h4>
+                                                    <p class="example-description">Demonstrates how to list processes, display a process tree, and check port usage.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Listing running processes:"
+                                                    ps aux | head -n 3
+
+                                                    echo "Process tree (sample):"
+                                                    pstree | head -n 3
+
+                                                    echo "Simulated kill output:"
+                                                    echo "Process 1234 killed"
+
+                                                    echo "Processes using port 80:"
+                                                    netstat -tulnp | grep :80</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Listing running processes:
+                                                    user  1234  0.1  1.2 ... /usr/bin/process1
+                                                    user  2345  0.0  0.8 ... /usr/bin/process2
+                                                    user  3456  0.2  1.0 ... /usr/bin/process3
+                                                    Process tree (sample):
+                                                    init─┬─systemd─┬─(sd-pam)
+                                                    ├─bash─┬─vim
+                                                    │      └─top
+                                                    └─sshd
+                                                    Simulated kill output:
+                                                    Process 1234 killed
+                                                    Processes using port 80:
+                                                    tcp        0      0 0.0.0.0:80            0.0.0.0:*           LISTEN      5678/apache2</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">User &amp; System Information</div>
+                                                    <h4 class="example-subheading">System Overview</h4>
+                                                    <p class="example-description">Prints the current user, active users, and system uptime.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Current user:"
+                                                    whoami
+
+                                                    echo "Active users:"
+                                                    who
+
+                                                    echo "System uptime:"
+                                                    uptime</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Current user:
+                                                    user
+
+                                                    Active users:
+                                                    user    tty7         2023-10-01 09:00 (:0)
+                                                    user    pts/0        2023-10-01 10:00 (192.168.1.2)
+
+                                                    System uptime:
+                                                    10:05:00 up 2 days,  3:45,  2 users,  load average: 0.05, 0.10, 0.15</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">Disk &amp; Network Commands</div>
+                                                    <h4 class="example-subheading">Disk &amp; Network Operations</h4>
+                                                    <p class="example-description">Shows disk usage, file search, log filtering, and network checks including ping and IP info.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Disk usage:"
+                                                    df -h | head -n 3
+
+                                                    echo "Finding 'example.txt':"
+                                                    find /home -name example.txt
+
+                                                    echo "Searching for 'error' in syslog:"
+                                                    grep 'error' /var/log/syslog | head -n 3
+
+                                                    echo "Pinging google.com:"
+                                                    ping -c 1 google.com
+
+                                                    echo "IP Address info:"
+                                                    ip a | head -n 5
+
+                                                    echo "Downloading sample file:"
+                                                    wget http://example.com/sample.txt</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Disk usage:
+                                                    Filesystem      Size  Used Avail Use% Mounted on
+                                                    /dev/sda1        50G   20G   28G  42% /
+                                                    ...
+                                                    Finding 'example.txt':
+                                                    /home/user/example.txt
+                                                    Searching for 'error' in syslog:
+                                                    Oct  1 10:00:01 hostname syslog: error: something went wrong
+                                                    Oct  1 10:01:02 hostname syslog: error: another issue
+                                                    Pinging google.com:
+                                                    PING google.com (172.217.0.46) 56(84) bytes of data.
+                                                    64 bytes from lga25s63-in-f14.1e100.net: icmp_seq=1 ttl=115 time=12.3 ms
+                                                    IP Address info:
+                                                    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 ...
+                                                    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 ...
+                                                    Downloading sample file:
+                                                    --2023-10-01 10:10:00--  http://example.com/sample.txt
+                                                    Resolving example.com... 93.184.216.34
+                                                    Connecting to example.com... connected.
+                                                    HTTP request sent, awaiting response... 200 OK
+                                                    Length: 1024 (1.0K) [text/plain]
+                                                    Saving to: ‘sample.txt’</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">File Compression Commands</div>
+                                                    <h4 class="example-subheading">Archive Operations</h4>
+                                                    <p class="example-description">Illustrates how to extract and compress files using tar commands.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Extracting archive.tar..."
+                                                    tar -xvf archive.tar
+
+                                                    echo "Compressing my_directory to archive.tar.gz..."
+                                                    tar -czvf archive.tar.gz my_directory</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Extracting archive.tar...
+                                                    file1.txt
+                                                    file2.txt
+                                                    my_directory/
+                                                    Compressing my_directory to archive.tar.gz...
+                                                    my_directory/ (compressed successfully)</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">Help Commands</div>
+                                                    <h4 class="example-subheading">Getting Help</h4>
+                                                    <p class="example-description">Shows how to display manual pages and view command history.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Manual for ls (first 5 lines):"
+                                                    man ls | head -n 5
+
+                                                    echo "Command history (last 5 commands):"
+                                                    history | tail -n 5</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Manual for ls (first 5 lines):
+                                                    LS(1)                   User Commands                  LS(1)
+                                                    NAME
+                                                    ls - list directory contents
+                                                    ...
+                                                    Command history (last 5 commands):
+                                                    100  ls -l
+                                                    101  pwd
+                                                    102  cd /home
+                                                    103  cat file.txt
+                                                    104  exit</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">Sorting &amp; Piping Commands</div>
+                                                    <h4 class="example-subheading">Data Processing</h4>
+                                                    <p class="example-description">Demonstrates sorting, filtering, and redirecting output using pipes.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Sorting file.txt alphabetically:"
+                                                    sort file.txt
+
+                                                    echo "Sorting file.txt in reverse:"
+                                                    sort -r file.txt
+
+                                                    echo "Sorting numbers numerically:"
+                                                    sort -n numbers.txt
+
+                                                    echo "Removing duplicates:"
+                                                    sort -u file.txt
+
+                                                    echo "Using pipe to filter output:"
+                                                    cat file.txt | grep "pattern"
+
+                                                    echo "Redirecting output to output.txt:"
+                                                    echo "Sample output" > output.txt
+
+                                                    echo "Appending output to output.txt:"
+                                                    echo "More output" >> output.txt</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Sorting file.txt alphabetically:
+                                                    apple
+                                                    banana
+                                                    cherry
+
+                                                    Sorting file.txt in reverse:
+                                                    cherry
+                                                    banana
+                                                    apple
+
+                                                    Sorting numbers numerically:
+                                                    1
+                                                    2
+                                                    10
+
+                                                    Removing duplicates:
+                                                    apple
+                                                    banana
+                                                    cherry
+
+                                                    Using pipe to filter output:
+                                                    banana
+
+                                                    Redirecting output to output.txt:
+                                                    Output saved.
+
+                                                    Appending output to output.txt:
+                                                    Output appended.</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    <div class="example-item">
+                                                    <div class="example-title">Date &amp; Time Commands</div>
+                                                    <h4 class="example-subheading">Time Operations</h4>
+                                                    <p class="example-description">Displays the current date/time, formatted dates, and converts timestamps.</p>
+                                                    <div class="example-container">
+                                                    <div class="code-box">
+                                                    <pre><code class="bash">#!/bin/bash
+
+                                                    echo "Current date and time:"
+                                                    date
+
+                                                    echo "Formatted date:"
+                                                    date '+%Y-%m-%d %H:%M:%S'
+
+                                                    echo "Yesterday's date:"
+                                                    date --date='yesterday'
+
+                                                    echo "Tomorrow's date:"
+                                                    date --date='tomorrow'
+
+                                                    echo "Converted timestamp (1609459200):"
+                                                    date -d @1609459200</code></pre>
+                                                    </div>
+                                                    <div class="divider"></div>
+                                                    <div class="output-box">
+                                                    <pre><code>Current date and time:
+                                                    Sun Oct  1 10:15:00 UTC 2023
+
+                                                    Formatted date:
+                                                    2023-10-01 10:15:00
+
+                                                    Yesterday's date:
+                                                    Sat Sep 30 10:15:00 UTC 2023
+
+                                                    Tomorrow's date:
+                                                    Mon Oct  2 10:15:00 UTC 2023
+
+                                                    Converted timestamp (1609459200):
+                                                    Fri Jan  1 00:00:00 UTC 2021</code></pre>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+                                                    </div>
+
+                                                    </body>
+                                                    </html>

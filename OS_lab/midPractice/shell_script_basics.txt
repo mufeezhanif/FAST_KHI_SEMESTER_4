@@ -1,0 +1,403 @@
+#!/bin/sh -> shebang line -> must be included in our script to execute 
+
+read -> command use to take input
+
+read -p "what is your name : " name
+echo "NAME : $name"
+
+scalar variable:
+ name="kirsh" -> no space between variable_name,equal,and the value
+
+
+scalar varibales are changable
+
+and if you have used "read" instruction to take input these are also changable 
+but if you have used readonly , then it is not changable
+
+foreg:
+name="hello"
+readonly name
+name="kirsh"
+
+(this will throw a error)
+
+
+--
+unset variable
+this command will remove the "variable" from other variable list , currently present in the script
+
+rg:
+
+name="kirsh"
+unset name
+echo $name   (this will just print an empty line) -> because the varibale (name) has been unset
+
+--
+
+special variables
+
+$0 -> FileName of the script
+$1...9 -> corresponds to the arguments with which a script was invoked 
+$# ->will return the number of argumnets applied to the script
+$* -> will return u all the arguments that are double quoted
+$@ -> will return u all the argumnets that are individually double quoted
+$? -> exit status of the last command that you have executed
+$$ ->  will give u the process number of the current shell for the shell  script, now this is also the process ID under which it has been executed
+
+
+---
+
+Relational Operators -> in bone shell they work only on numeric's
+
+
+-eq -> check if two operands are equal or not 
+/*
+if [ &a -eq $b ]; then 
+remeber space after if , after [ , before ] is required 
+otherwise it will give an error
+*/
+
+-ne -> returns true if a is not equal to be
+-gt -> checks if the value of left operand is greater than the value of right operand or not
+-lt -> less than 
+-ge -> greater than or equal to
+-le -> less than or equal to
+
+---
+Boolean Operators
+
+! -> negate -> [ !fasle ] will return true
+-o -> logical OR 
+-a -> Logical AND
+
+---
+String Operators
+= -> checks if two operands are equal or not
+!= -> checks if two operands are not equal or not
+-z -> checks if given operand string size is , if it is zero then it will return true
+-n -> check if the given oeprand string size is not zero
+str -> check if str is not empty string , if empty returns true else false
+
+
+---
+FILE Test Operators
+-r file -> check if file is readable
+-w file -> check if file is writable
+-x file -> check if file is executable
+-s file -> check if fileSize is greater than 0
+-e file -> check if file exist
+-d file -> check if file is a directory
+
+
+
+---
+SHELL LOOPS
+
+1- FOR LOOP
+
+for var in 0 1 2 3 4 5 6 7
+do
+echo $var
+done
+
+this can be improved by 
+
+for var in {0..7}
+
+
+
+
+2- While Loop
+
+while command
+do
+	statement
+done
+for eg:
+
+a=0
+
+while [ $a -lt 10 ]
+do 
+	echo $a
+	a='expr $a +1' (older method)
+done
+
+modern method for incrementing
+a=$((a+1)  or ((a++)) #more efficient
+
+
+foreg:
+LOOP CONTROL
+
+nums="1 2 3 4 5"
+for a in $nums
+do
+	Q=$(( $a % 2 ))
+	if [ $Q -eq 0 ];
+	then
+		echo "NUM IS EVEN!!"
+		continue
+	fi
+	echo "FOUNd ODD NUMBER"
+done
+
+
+---
+FUNCTIONS
+
+basic format
+
+functionName(){
+  list of commands you want to perform
+}
+
+eg:
+
+#!/bin/sh
+
+#define function
+Hello(){
+
+	echo "HELLO LEARNER"
+}
+
+#invoke funtion
+Hello
+
+
+for paramters just pass them during invoking
+
+Hello(){
+	echo "Hello $1 $2"
+}
+
+Hello Kirsh Talreja
+
+output:  Hello Kirsh Talreja
+
+-
+functions can also return values
+Hello(){
+
+  return 10
+}
+
+Hello
+ret=$?
+echo "Returned Value is $ret"
+
+
+Nested Functions
+--
+number_one(){
+	
+	echo "Alpha Online ... Over"
+	number_two
+}
+
+number_two(){
+	echo "Beta Online ... Over"
+}
+
+number_one  #invoke
+-> output
+
+
+
+
+shortcut
+
+echo "Enter num: "
+read num
+
+equals to
+
+read -p "Enter
+
+---
+FILEs PROCEDURES
+
+LOOP HANDLING IN FILES AND DIR
+for files in "$dir"/*;do  -> (we have to write this whole)
+
+to trime a filename
+file="fileee.txt"
+extension="${file##*.}; -> this will remove  upto last dot
+
+will remove everything before . , and all left will be after . ie: extension of the file
+eg:
+file="archieve.tar.gz" 
+extension="${file##*.}"
+
+extension = gz (output)
+
+
+
+
+
+
+----
+ARRAYS
+how to defien an array?
+myArray=( 1 2 Hello "Hey man" )
+(space after and before , open and close bracket)
+
+how to get values from an array?
+-> echo "${myArray[0]}"  ->1
+
+to print the whole array content
+-> echo "${myArray[*]}"
+
+to get length of whole array
+-> echo "${#myArray[*]}"
+    (put a hash)
+
+to get specific values , from i to j index
+
+myArray=(1 2 3 4 5)
+echo "values from index 2-3 :  ${myArray[*]:2:2}"
+-> output :(3 4)
+from 2nd index , we need two values (2:2)
+
+to append , or add new values in array, just use += 
+myArray +=(6 7 8)
+
+echo "${#myArray[*]}"  output: 1 2 3 4 5 6 7 8
+
+
+---
+key-value pairs in Array
+
+declare -A myArray   #to declare an array
+myArray=( [name]=kirsh [age]=19 [city]=karachi )
+
+echo "Name : ${myArray[name]}"
+echo "Name : ${myArray[age]}"
+echo "Name : ${myArray[city]}"
+
+output
+kirsh
+19
+karachi
+
+
+---
+Strings
+
+to get length of a string
+str="HELLOJBBBIUBIUB"
+len=${#str}
+
+
+uppercase string ->  "${str^^}"
+lowercase string ->  "${str,,}"
+
+to replace a string
+newVar=${str/buddy/paul}
+
+replace buddy with paul
+
+
+to slice/trim the string from ith index to n letters
+slice = ${str:4:5}
+from 4th character to 5 length onward string 
+
+eg:
+str="Hey Buddy, Hooaooa"
+slice=${str:4:5}
+
+echo "$slice" -> Buddy
+
+
+---
+Arthematic Operations
+
+x=10
+y=2
+
+use let operator or , ((  )) comands
+1- let
+
+let mul=$x*$y
+echo "$mul"  -> 20
+
+without let
+mul=$x*$y
+echo "$mul" -> $x*$y (as a string)
+
+2- (( ))
+
+echo "Mul : $((x* y))"
+
+
+---
+switch case
+
+read choice
+case $choice in
+	a) (here we can add multiple command in one block too)
+	b)
+	*) (default)
+esac
+
+and always end , the option with (;;) foreg:
+a)echo "today date : "  date;;
+
+
+
+
+
+
+---
+grep - command
+searches text
+
+suppose search for a word
+grep "word" fileName
+
+1-case sensititvity 
+grep -i "word" fileName
+it matches word WORD , WOrD etc
+
+
+---
+cut command
+
+cut -d',' -f1 user.txt
+
+suppose if a txt file is in the csv format and i want to extract the first values
+kirsh,1001,kumar,FAST
+
+using the above command will give me kirsh
+
+
+grep -> if we want to search something in our txt file
+
+if grep -q "$t" "$FILE"; then
+    echo "Title '$t' found in $FILE"
+else
+    echo "Title '$t' not found in $FILE"
+fi
+
+
+
+---
+free -mt -> will give stastics of RAM space
+df -> will give the disk sapce , USAGE of memory ram for eg:
+
+tr -d % -> will trim the data , or remove % from the data
+for eg: 26% -> tr -d % == 26
+
+
+
+
+
+
+
+
+
+
+
+
+
