@@ -1,0 +1,1825 @@
+import React from "react";
+import { useState, useEffect, useContext } from "react";
+import Countdown from "react-countdown";
+import ProfessorTextContext from "../../ProfessorTextContext";
+import { useNavigate } from "react-router-dom";
+import "./Game.css";
+import useConfirmRefresh from "../../hooks/useConfirmRefresh";
+//images
+import professorPNG from "../../assets/professor.png";
+import stage1survellanceroom from "../../assets/stage1survellanceroom.webp";
+import invisiblePNG from "../../assets/invisible.png";
+import dummyMathPuzzle from "../../assets/dummyMathPuzzle.png";
+import twoGuardsImage from "../../assets/twoguards.webp";
+import singleGuardImage from "../../assets/singleguard.webp";
+import noGuardImage from "../../assets/noguard.webp";
+import timeRoomImage from "../../assets/timeroom.jpeg";
+import alarmRoomImage from "../../assets/alarmroom.jpeg";
+import vaultchambersImage from "../../assets/vaultchambers.webp";
+import FirstMisleadVaultImage from "../../assets/1_MisleadVault.webp";
+import SecondMisleadVaultImage from "../../assets/2_MisleadVault.webp";
+import CorrectVaultImage from "../../assets/correctvault.webp";
+import IntheVaultImage from "../../assets/correctVaultOpened.webp";
+import escapeRoomImage from "../../assets/escapeDoor.webp";
+//puzzles images
+import puzzle1Image from "../../assets/puzzle1.png";
+import puzzle3Image from "../../assets/puzzle3.png";
+import puzzle4Image from "../../assets/puzzle4.png";
+
+const PopupPuzzle = ({
+  imageUrl,
+  correctAnswer,
+  puzzleState,
+  changePuzzleState,
+  questionDescription,
+  onlyText,
+}) => {
+  const handleAnswerClick = () => {
+    const answer = document.querySelector("#PuzzleAnswer").value;
+    const messageBox = document.querySelector("#messageBox");
+
+    // Reset the message box
+    messageBox.textContent = "";
+    messageBox.classList.remove("correct", "wrong");
+
+    if (answer == correctAnswer) {
+      messageBox.textContent = "Your Answer Is Correct!";
+      messageBox.classList.add("correct");
+      setTimeout(() => {
+        changePuzzleState({
+          ...puzzleState,
+          isAnswered: true,
+          isPopupOpen: false,
+        });
+      }, 1000);
+    } else {
+      messageBox.textContent = "Wrong Answer!";
+      messageBox.classList.add("wrong");
+      setTimeout(() => {
+        messageBox.style.opacity = 0;
+        setTimeout(() => {
+          messageBox.textContent = "";
+          messageBox.classList.remove("wrong");
+          messageBox.style.opacity = 1;
+        }, 500);
+      }, 2000);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard
+      .writeText(questionDescription)
+      .then(() => {
+        const copyButton = document.querySelector("#copyButton");
+        if (copyButton) {
+          copyButton.textContent = "Copied!";
+          setTimeout(() => {
+            copyButton.textContent = "Copy Puzzle";
+          }, 2000);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  };
+
+  return (
+    <div className="popup-overlay">
+      <div className="popup">
+        <p>Solve the following puzzle to move forward</p>
+        {onlyText && (
+          <p style={{ width: "100%", alignContent: "center" }}>{onlyText}</p>
+        )}
+        {imageUrl && (
+          <img className="check-image" src={imageUrl} alt="puzzle image" />
+        )}
+        <input id="PuzzleAnswer" type="text" placeholder="Enter answer here" />
+
+        {questionDescription && (
+          <button
+            id="copyButton"
+            onClick={copyToClipboard}
+            className="copy-button answer-button"
+          >
+            Copy Puzzle
+          </button>
+        )}
+
+        <button className="answer-button" onClick={handleAnswerClick}>
+          Answer
+        </button>
+        <p id="messageBox"></p>
+        <button
+          className="close-button"
+          onClick={() => {
+            changePuzzleState({ ...puzzleState, isPopupOpen: false });
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const MemberLoginPopup = ({
+  memberName,
+  password,
+  message = "",
+  puzzleState,
+  changePuzzleState,
+}) => {
+  const [name, setName] = useState(memberName);
+  const [pass, setPass] = useState(password);
+  const [statusMessage, setStatusMessage] = useState(message);
+
+  const handleAnswerClick = () => {
+    const messageBox = document.querySelector("#messageBox");
+
+    // Reset the message box
+    messageBox.textContent = "";
+    messageBox.classList.remove("correct", "wrong");
+
+    if (name == memberName && pass == password) {
+      messageBox.textContent = "Your Answer Is Correct!";
+      messageBox.classList.add("correct");
+      setTimeout(() => {
+        changePuzzleState({
+          ...puzzleState,
+          isAnswered: true,
+          isPopupOpen: false,
+        });
+      }, 1000);
+    } else {
+      messageBox.textContent = "Wrong Answer!";
+      messageBox.classList.add("wrong");
+      setTimeout(() => {
+        messageBox.style.opacity = 0;
+        setTimeout(() => {
+          messageBox.textContent = "";
+          messageBox.classList.remove("wrong");
+          messageBox.style.opacity = 1;
+        }, 500);
+      }, 2000);
+    }
+  };
+
+  return (
+    <div className="popup-overlay">
+      <div className="popup">
+        <h3>Enter the Correct Name And Password</h3>
+
+        <div className="input-field">
+          <label htmlFor="memberName">Member Name:</label>
+          <input
+            id="memberName"
+            type="text"
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter member name"
+          />
+        </div>
+
+        <div className="input-field">
+          <label htmlFor="password">Password:</label>
+          <input
+            id="password"
+            type="password"
+            onChange={(e) => setPass(e.target.value)}
+            placeholder="Enter password"
+          />
+        </div>
+
+        <p id="messageBox" className={statusMessage ? "visible" : ""}>
+          {statusMessage}
+        </p>
+        <p id="messageBox"></p>
+        <div className="button-group">
+          <button className="answer-button" onClick={handleAnswerClick}>
+            Answer
+          </button>
+          <button
+            className="close-button"
+            onClick={() => {
+              changePuzzleState({ ...puzzleState, isPopupOpen: false });
+
+              setName("");
+              setPass("");
+              setStatusMessage("");
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SurveillanceRoom = ({ changeStage }) => {
+  /* 
+    - change one puzzle picture
+    - correct the position of clickables
+  */
+  const [puzzle1, setPuzzle1] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle2, setPuzzle2] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle3, setPuzzle3] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setProfessorText(
+        "There are three puzzles hidden in this room, solve them and get to the next stage!!"
+      );
+    }, 3000);
+  }, []);
+
+  const goToPuzzle1 = () => {
+    if (!puzzle1.isAnswered) {
+      setPuzzle1({ ...puzzle1, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle2 = () => {
+    if (!puzzle2.isAnswered) {
+      setPuzzle2({ ...puzzle2, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle3 = () => {
+    if (!puzzle3.isAnswered) {
+      setPuzzle3({ ...puzzle3, isPopupOpen: true });
+    }
+  };
+
+  useEffect(() => {
+    //if all the puzzles have answered and the players has not opened a puzzle right now,
+    //then proceed him to next stage
+    if (
+      puzzle1.isAnswered &&
+      puzzle2.isAnswered &&
+      puzzle3.isAnswered &&
+      !puzzle1.isPopupOpen &&
+      !puzzle2.isPopupOpen &&
+      !puzzle3.isPopupOpen
+    ) {
+      setTimeout(() => {
+        changeStage("twoguards");
+      }, 2000); //go to next stage after 2 seconds
+    }
+
+    if (puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered == 1) {
+      setProfessorText("There are two puzzles remaining!!");
+    } else if (
+      puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+      2
+    ) {
+      setProfessorText("One puzzle remaining!!");
+    } else if (
+      puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+      3
+    ) {
+      setProfessorText("All cleared!!, proceed to next stage");
+    }
+  }, [puzzle1, puzzle2, puzzle3]);
+
+  return (
+    <div className={`game-area`}>
+      <div
+        className={`background-content ${
+          puzzle1.isPopupOpen || puzzle2.isPopupOpen || puzzle3.isPopupOpen
+            ? "blurred"
+            : ""
+        }`}
+      >
+        <img
+          src={stage1survellanceroom}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            onClick={goToPuzzle1}
+            style={{ cursor: "pointer", bottom: "220px", left: "460px" }}
+            className="invisible-img"
+          />
+        </div>
+
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            onClick={goToPuzzle2}
+            style={{ cursor: "pointer", bottom: "131px", right: "490px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            onClick={goToPuzzle3}
+            style={{ cursor: "pointer", top: "104px", right: "451px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+
+      {puzzle1.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={puzzle1Image}
+          correctAnswer={"CCTV is Hacked"}
+          puzzleState={puzzle1}
+          changePuzzleState={setPuzzle1}
+        />
+      )}
+
+      {puzzle2.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={dummyMathPuzzle}
+          correctAnswer={10}
+          puzzleState={puzzle2}
+          changePuzzleState={setPuzzle2}
+        />
+      )}
+
+      {puzzle3.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={puzzle3Image}
+          correctAnswer={5432176}
+          puzzleState={puzzle3}
+          changePuzzleState={setPuzzle3}
+        />
+      )}
+    </div>
+  );
+};
+
+const TwoGuards = ({ changeStage }) => {
+  //correct the clickable position
+  const goToTimeRoom = () => {
+    setTimeout(() => {
+      changeStage("timeroom");
+    }, 1000);
+  };
+
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  useEffect(() => {
+    setProfessorText(
+      "To go to vault chambers you have to distract the guards, maybe through sneeking them to another room!!?"
+    );
+  }, []);
+
+  return (
+    <div className={`game-area`}>
+      <div className={`background-content`}>
+        <img
+          src={twoGuardsImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            onClick={goToTimeRoom}
+            style={{ cursor: "pointer", top: "304px", right: "651px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TimeRoom = ({ changeStage }) => {
+  /*
+    - position of clickable
+    - correct popup formatting
+  */
+  const [puzzle4, setPuzzle4] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  let description =
+    "V2UgbWFyY2ggaW4gbGluZSwgbmV2ZXIgbGF0ZSwgIApBdCBvdXIgcG9zdCwgd2UgZ3VhcmQgdGhlIGdhdGUuICAKV2hlbiB0aGUgY2xvY2sgc3RyaWtlcyBoYWxmIHBhc3Qgbm9vbiwgIApXZSBzaGFsbCBzaGlmdCwgYW5kIG5vdCB0b28gc29vbi4gIApDaGFuZ2Ugb3VyIHBhY2UsIGFuZCB3ZSBzaGFsbCBtb3ZlLCAgClRvIGEgbmV3IHNwb3QsIG91ciBwYXRoIHRvIHByb3ZlLiAgCldoYXQgYXJlIHdlLCBhbmQgd2hhdCBtdXN0IHlvdSBkbywgIApUbyBtYWtlIHVzIHNoaWZ0IGFuZCBjbGVhciB5b3VyIHZpZXc/";
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  const goToPuzzle4 = () => {
+    setPuzzle4({ ...puzzle4, isPopupOpen: true });
+  };
+
+  useEffect(() => {
+    setProfessorText("find a way to distract the guard");
+  }, []);
+
+  useEffect(() => {
+    //if all the puzzles have answered and the players has not opened a puzzle right now,
+    //then proceed him to next stage
+    if (puzzle4.isAnswered && !puzzle4.isPopupOpen) {
+      setProfessorText(
+        "Good JOB!!, Guard 1 is busy in Room, now its time for another Guard!"
+      );
+      setTimeout(() => {
+        changeStage("singleguard");
+      }, 1500); //go to next stage after 1 seconds
+    }
+  }, [puzzle4]);
+
+  return (
+    <div className={`game-area`}>
+      <div
+        className={`background-content ${puzzle4.isPopupOpen ? "blurred" : ""}`}
+      >
+        <img
+          src={timeRoomImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            onClick={goToPuzzle4}
+            style={{ cursor: "pointer", bottom: "220px", left: "460px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+
+      {puzzle4.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={puzzle4Image}
+          correctAnswer={"12:30"}
+          puzzleState={puzzle4}
+          changePuzzleState={setPuzzle4}
+          questionDescription={description}
+        />
+      )}
+    </div>
+  );
+};
+
+const SingleGuard = ({ changeStage }) => {
+  const goToAlarmRoom = () => {
+    setTimeout(() => {
+      changeStage("alarmroom");
+    }, 1000);
+  };
+
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  useEffect(() => {
+    setProfessorText(
+      "one guard remaining, find a way to remove him from the path"
+    );
+  }, []);
+
+  return (
+    <div className={`game-area`}>
+      <div className={`background-content`}>
+        <img
+          src={singleGuardImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            onClick={goToAlarmRoom}
+            style={{ cursor: "pointer", top: "304px", left: "161px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AlarmRoom = ({ changeStage }) => {
+  /*
+    - implement alarm
+    - correct clickable position
+  */
+  const [puzzle5, setPuzzle5] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+
+  const AlarmSound = new Audio("../../Sounds/alarm.wav");
+  AlarmSound.play().catch((err) => console.log("Audio err", err));
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  const goToPuzzle5 = () => {
+    setPuzzle5({ ...puzzle5, isPopupOpen: true });
+  };
+
+  useEffect(() => {
+    setProfessorText("find a way to distract the guard");
+  }, []);
+
+  useEffect(() => {
+    //if all the puzzles have answered and the players has not opened a puzzle right now,
+    //then proceed him to next stage
+    if (puzzle5.isAnswered && !puzzle5.isPopupOpen) {
+      setProfessorText("Fantastic!!!, you have distracted both the guards!");
+      setTimeout(() => {
+        changeStage("noguard");
+      }, 3000); //go to next stage after 1 seconds
+    }
+  }, [puzzle5]);
+
+  return (
+    <div className={`game-area`}>
+      <div
+        className={`background-content ${puzzle5.isPopupOpen ? "blurred" : ""}`}
+      >
+        <img
+          src={alarmRoomImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            onClick={goToPuzzle5}
+            style={{ cursor: "pointer", bottom: "220px", left: "460px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+
+      {puzzle5.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={dummyMathPuzzle}
+          correctAnswer={10}
+          puzzleState={puzzle5}
+          changePuzzleState={setPuzzle5}
+        />
+      )}
+    </div>
+  );
+};
+
+const NoGuard = ({ changeStage }) => {
+  //Access the context
+  /*
+    - correct he png position
+  */
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  useEffect(() => {
+    setProfessorText("Now proceed to the vault chambers!!");
+  }, []);
+
+  const goToVaultChambers = () => {
+    setTimeout(() => {
+      changeStage("vaultchambers1");
+    }, 1000);
+  };
+
+  return (
+    <div className={`game-area`}>
+      <div className={`background-content`}>
+        <img
+          src={noGuardImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            onClick={goToVaultChambers}
+            style={{ cursor: "pointer", top: "304px", right: "126vh" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const VaultChambers = ({ changeStage }) => {
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  const [puzzle1, setPuzzle1] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle2, setPuzzle2] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+
+  //Access the context
+
+  useEffect(() => {
+    document.getElementById("secondPuzzle").style.display = "none";
+    setTimeout(() => {
+      setProfessorText("Solve the security puzzle");
+    }, 3000);
+  }, []);
+
+  const goToPuzzle1 = () => {
+    if (!puzzle1.isAnswered) {
+      setPuzzle1({ ...puzzle1, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle2 = () => {
+    if (!puzzle2.isAnswered && puzzle1.isAnswered) {
+      setPuzzle2({ ...puzzle2, isPopupOpen: true });
+    }
+  };
+
+  useEffect(() => {
+    //if all the puzzles have answered and the players has not opened a puzzle right now,
+    //then proceed him to next stage
+    if (
+      puzzle1.isAnswered &&
+      puzzle2.isAnswered &&
+      !puzzle1.isPopupOpen &&
+      !puzzle2.isPopupOpen
+    ) {
+      setTimeout(() => {
+        changeStage("misleadVault1");
+      }, 2000); //go to next stage after 2 seconds
+    }
+    if (puzzle1.isAnswered) {
+      document.getElementById("secondPuzzle").style.display = "block";
+      document.getElementById("firstPuzzle").style.display = "none";
+    }
+    // if (puzzle1.isAnswered + puzzle2.isAnswered  == 1) {
+    //   setProfessorText("There are two puzzles remaining!!");
+    // } else if (
+    //   puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+    //   2
+    // ) {
+    //   setProfessorText("One puzzle remaining!!");
+    // } else if (
+    //   puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+    //   3
+    // ) {
+    //   setProfessorText("All cleared!!, proceed to next stage");
+    // }
+  }, [puzzle1, puzzle2]);
+
+  return (
+    <div className={`game-area`}>
+      <div
+        className={`background-content ${
+          puzzle1.isPopupOpen || puzzle2.isPopupOpen ? "blurred" : ""
+        }`}
+      >
+        <img
+          src={vaultchambersImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="firstPuzzle"
+            onClick={goToPuzzle1}
+            style={{ cursor: "pointer", bottom: "320px", left: "790px" }}
+            className="invisible-img"
+          />
+        </div>
+
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="secondPuzzle"
+            onClick={goToPuzzle2}
+            style={{ cursor: "pointer", top: "431px", left: "360px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+
+      {puzzle1.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={puzzle1Image}
+          correctAnswer={10}
+          puzzleState={puzzle1}
+          changePuzzleState={setPuzzle1}
+        />
+      )}
+
+      {puzzle2.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={dummyMathPuzzle}
+          correctAnswer={10}
+          puzzleState={puzzle2}
+          changePuzzleState={setPuzzle2}
+        />
+      )}
+    </div>
+  );
+};
+
+const FirstMisleadVault = ({ changeStage }) => {
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  const [puzzle1, setPuzzle1] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle2, setPuzzle2] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle3, setPuzzle3] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle4, setPuzzle4] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle5, setPuzzle5] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle6, setPuzzle6] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle7, setPuzzle7] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+
+  //Access the context
+
+  useEffect(() => {
+    document.getElementById("p2").style.display = "none";
+    document.getElementById("p3").style.display = "none";
+    document.getElementById("p4").style.display = "none";
+    document.getElementById("p5").style.display = "none";
+    document.getElementById("p6").style.display = "none";
+    document.getElementById("p7").style.display = "none";
+
+    setTimeout(() => {
+      setProfessorText("Solve the security puzzle");
+    }, 3000);
+  }, []);
+
+  const goToPuzzle1 = () => {
+    if (!puzzle1.isAnswered) {
+      setPuzzle1({ ...puzzle1, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle2 = () => {
+    if (!puzzle2.isAnswered && puzzle1.isAnswered) {
+      setPuzzle2({ ...puzzle2, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle3 = () => {
+    if (!puzzle3.isAnswered && puzzle2.isAnswered) {
+      setPuzzle3({ ...puzzle3, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle4 = () => {
+    if (!puzzle4.isAnswered && puzzle3.isAnswered) {
+      setPuzzle4({ ...puzzle4, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle5 = () => {
+    if (!puzzle5.isAnswered && puzzle4.isAnswered) {
+      setPuzzle5({ ...puzzle5, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle6 = () => {
+    if (!puzzle6.isAnswered && puzzle5.isAnswered) {
+      setPuzzle6({ ...puzzle6, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle7 = () => {
+    if (!puzzle7.isAnswered && puzzle6.isAnswered) {
+      setPuzzle7({ ...puzzle7, isPopupOpen: true });
+    }
+  };
+
+  useEffect(() => {
+    //if all the puzzles have answered and the players has not opened a puzzle right now,
+    //then proceed him to next stage
+    if (
+      puzzle1.isAnswered &&
+      puzzle2.isAnswered &&
+      puzzle3.isAnswered &&
+      puzzle4.isAnswered &&
+      puzzle5.isAnswered &&
+      puzzle6.isAnswered &&
+      puzzle7.isAnswered &&
+      !puzzle1.isPopupOpen &&
+      !puzzle3.isPopupOpen &&
+      !puzzle4.isPopupOpen &&
+      !puzzle5.isPopupOpen &&
+      !puzzle6.isPopupOpen &&
+      !puzzle7.isPopupOpen &&
+      !puzzle2.isPopupOpen
+    ) {
+      setTimeout(() => {
+        changeStage("vaultchambers2");
+      }, 2000); //go to next stage after 2 seconds
+    }
+    document.getElementById("p1").style.display = "block";
+
+    if (puzzle1.isAnswered) {
+      document.getElementById("p2").style.display = "block";
+      document.getElementById("p1").style.display = "none";
+    }
+    if (puzzle2.isAnswered) {
+      document.getElementById("p3").style.display = "block";
+      document.getElementById("p2").style.display = "none";
+    }
+    if (puzzle3.isAnswered) {
+      document.getElementById("p4").style.display = "block";
+      document.getElementById("p3").style.display = "none";
+    }
+    if (puzzle4.isAnswered) {
+      document.getElementById("p5").style.display = "block";
+      document.getElementById("p4").style.display = "none";
+    }
+    if (puzzle5.isAnswered) {
+      document.getElementById("p6").style.display = "block";
+      document.getElementById("p5").style.display = "none";
+    }
+    if (puzzle6.isAnswered) {
+      document.getElementById("p7").style.display = "block";
+      document.getElementById("p6").style.display = "none";
+    }
+
+    // if (puzzle1.isAnswered + puzzle2.isAnswered  == 1) {
+    //   setProfessorText("There are two puzzles remaining!!");
+    // } else if (
+    //   puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+    //   2
+    // ) {
+    //   setProfessorText("One puzzle remaining!!");
+    // } else if (
+    //   puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+    //   3
+    // ) {
+    //   setProfessorText("All cleared!!, proceed to next stage");
+    // }
+  }, [puzzle1, puzzle2, puzzle3, puzzle4, puzzle5, puzzle6, puzzle7]);
+
+  return (
+    <div className={`game-area`}>
+      <div
+        className={`background-content ${
+          puzzle1.isPopupOpen ||
+          puzzle2.isPopupOpen ||
+          puzzle3.isPopupOpen ||
+          puzzle4.isPopupOpen ||
+          puzzle5.isPopupOpen ||
+          puzzle6.isPopupOpen ||
+          puzzle7.isPopupOpen
+            ? "blurred"
+            : ""
+        }`}
+      >
+        <img
+          src={FirstMisleadVaultImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p1"
+            onClick={goToPuzzle1}
+            style={{ cursor: "pointer", top: "120px", right: "490px" }}
+            className="invisible-img"
+          />
+        </div>
+
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p2"
+            onClick={goToPuzzle2}
+            style={{ cursor: "pointer", top: "320px", right: "490px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p3"
+            onClick={goToPuzzle3}
+            style={{ cursor: "pointer", top: "490px", right: "490px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p4"
+            onClick={goToPuzzle4}
+            style={{ cursor: "pointer", top: "690px", right: "490px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p5"
+            onClick={goToPuzzle5}
+            style={{ cursor: "pointer", top: "120px", left: "90px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p6"
+            onClick={goToPuzzle6}
+            style={{ cursor: "pointer", top: "320px", left: "90px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p7"
+            onClick={goToPuzzle7}
+            style={{ cursor: "pointer", top: "520px", left: "90px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+
+      {puzzle1.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={"WW91dmUgZm91bmQgdGhlIHJlYWwgdmF1bHQ="}
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  WW91dmUgZm91bmQgdGhlIHJlYWwgdmF1bHQ="
+          }
+          correctAnswer={"Youve found the real vault"}
+          puzzleState={puzzle1}
+          changePuzzleState={setPuzzle1}
+        />
+      )}
+
+      {puzzle2.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={
+            "VGhlIHRyZWFzdXJlcyBhcmUgd2l0aGluIHlvdXIgcmVhY2g="
+          }
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  VGhlIHRyZWFzdXJlcyBhcmUgd2l0aGluIHlvdXIgcmVhY2g="
+          }
+          correctAnswer={"The treasures are within your reach"}
+          puzzleState={puzzle2}
+          changePuzzleState={setPuzzle2}
+        />
+      )}
+
+      {puzzle3.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={
+            "RGVjb2RlIHRoZSBjaXBoZXIgdG8gdW5sb2NrIHRoZSBkb29y"
+          }
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  RGVjb2RlIHRoZSBjaXBoZXIgdG8gdW5sb2NrIHRoZSBkb29y"
+          }
+          correctAnswer={"Decode the cipher to unlock the door"}
+          puzzleState={puzzle3}
+          changePuzzleState={setPuzzle3}
+        />
+      )}
+
+      {puzzle4.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={
+            "VGhlIGZpbmFsIGNvZGUgaXMgaGlkZGVuIGluIHBsYWluIHNpZ2h0IA=="
+          }
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  VGhlIGZpbmFsIGNvZGUgaXMgaGlkZGVuIGluIHBsYWluIHNpZ2h0IA=="
+          }
+          correctAnswer={"The final code is hidden in plain sight "}
+          puzzleState={puzzle4}
+          changePuzzleState={setPuzzle4}
+        />
+      )}
+
+      {puzzle5.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={
+            "U2hpZnQgdGhlIGxldHRlcnMsIGFuZCB0aGUgdHJ1dGggd2lsbCBhcHBlYXIg"
+          }
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  U2hpZnQgdGhlIGxldHRlcnMsIGFuZCB0aGUgdHJ1dGggd2lsbCBhcHBlYXIg"
+          }
+          correctAnswer={"Shift the letters, and the truth will appear "}
+          puzzleState={puzzle5}
+          changePuzzleState={setPuzzle5}
+        />
+      )}
+
+      {puzzle6.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={
+            "QnV0IGJld2FyZW5vdCBhbGwgdGhhdCBnbGl0dGVycyBpcyBnb2xkIA=="
+          }
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  QnV0IGJld2FyZW5vdCBhbGwgdGhhdCBnbGl0dGVycyBpcyBnb2xkIA=="
+          }
+          correctAnswer={"But bewarenot all that glitters is gold "}
+          puzzleState={puzzle6}
+          changePuzzleState={setPuzzle6}
+        />
+      )}
+      {puzzle7.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={
+            "QWNjZXNzIGdyYW50ZWQhIEp1c3Qga2lkZGluZ3dyb25nIGRvb3IuIEJldHRlciBsdWNrIG5leHQgdGltZSE="
+          }
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  QWNjZXNzIGdyYW50ZWQhIEp1c3Qga2lkZGluZ3dyb25nIGRvb3IuIEJldHRlciBsdWNrIG5leHQgdGltZSE="
+          }
+          correctAnswer={
+            "Access granted! Just kiddingwrong door. Better luck next time!"
+          }
+          puzzleState={puzzle7}
+          changePuzzleState={setPuzzle7}
+        />
+      )}
+    </div>
+  );
+};
+
+const VaultChambers2 = ({ changeStage }) => {
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  //Access the context
+
+  useEffect(() => {
+    setTimeout(() => {
+      setProfessorText("Solve the security puzzle");
+    }, 3000);
+  }, []);
+
+  const goToSecondVault = () => {
+    setProfessorText("Heading towards the next vault");
+
+    setTimeout(() => {
+      changeStage("misleadVault2");
+    }, 2000);
+  };
+  return (
+    <div className={`game-area`}>
+      <div className={`background-content`}>
+        <img
+          src={vaultchambersImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="firstPuzzle"
+            onClick={goToSecondVault}
+            style={{ cursor: "pointer", bottom: "440px", right: "700px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SecondMisleadVault = ({ changeStage }) => {
+  //puzzle will be implemented when sent
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  const [puzzle1, setPuzzle1] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+
+  //Access the context
+
+  useEffect(() => {
+    setTimeout(() => {
+      setProfessorText("Solve the security puzzle");
+    }, 3000);
+  }, []);
+
+  const goToPuzzle1 = () => {
+    if (!puzzle1.isAnswered) {
+      setPuzzle1({ ...puzzle1, isPopupOpen: true });
+    }
+  };
+
+  useEffect(() => {
+    //if all the puzzles have answered and the players has not opened a puzzle right now,
+    //then proceed him to next stage
+    if (puzzle1.isAnswered && !puzzle1.isPopupOpen) {
+      setProfessorText("Wrong Vault hahaha");
+
+      setTimeout(() => {
+        changeStage("vaultchambers3");
+      }, 2000); //go to next stage after 2 seconds
+    }
+    // if (puzzle1.isAnswered + puzzle2.isAnswered  == 1) {
+    //   setProfessorText("There are two puzzles remaining!!");
+    // } else if (
+    //   puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+    //   2
+    // ) {
+    //   setProfessorText("One puzzle remaining!!");
+    // } else if (
+    //   puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+    //   3
+    // ) {
+    //   setProfessorText("All cleared!!, proceed to next stage");
+    // }
+  }, [puzzle1]);
+
+  return (
+    <div className={`game-area`}>
+      <div
+        className={`background-content ${puzzle1.isPopupOpen ? "blurred" : ""}`}
+      >
+        <img
+          src={SecondMisleadVaultImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p1"
+            onClick={goToPuzzle1}
+            style={{ cursor: "pointer", top: "120px", right: "490px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+
+      {puzzle1.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={"WW91dmUgZm91bmQgdGhlIHJlYWwgdmF1bHQ="}
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  WW91dmUgZm91bmQgdGhlIHJlYWwgdmF1bHQ="
+          }
+          correctAnswer={"Youve found the real vault"}
+          puzzleState={puzzle1}
+          changePuzzleState={setPuzzle1}
+        />
+      )}
+    </div>
+  );
+};
+
+const VaultChambers3 = ({ changeStage }) => {
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  //Access the context
+
+  useEffect(() => {
+    setTimeout(() => {
+      setProfessorText("Solve the security puzzle");
+    }, 3000);
+  }, []);
+
+  const goToSecondVault = () => {
+    setProfessorText("Heading towards the next vault");
+
+    setTimeout(() => {
+      changeStage("correctVault");
+    }, 2000);
+  };
+  return (
+    <div className={`game-area`}>
+      <div className={`background-content`}>
+        <img
+          src={vaultchambersImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="firstPuzzle"
+            onClick={goToSecondVault}
+            style={{ cursor: "pointer", bottom: "440px", left: "750px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CorrectVault = ({ changeStage }) => {
+  /* 
+    - change one puzzle picture
+    - correct the position of clickables
+  */
+  const [puzzle1, setPuzzle1] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle2, setPuzzle2] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle3, setPuzzle3] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle4, setPuzzle4] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+  const [puzzle5, setPuzzle5] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  useEffect(() => {
+    document.getElementById("p5").style.display = "none";
+    setTimeout(() => {
+      setProfessorText(
+        "There are four puzzles hidden in this room, solve them and get to the next stage!!"
+      );
+    }, 3000);
+  }, []);
+
+  const goToPuzzle1 = () => {
+    if (!puzzle1.isAnswered) {
+      setPuzzle1({ ...puzzle1, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle2 = () => {
+    if (!puzzle2.isAnswered) {
+      setPuzzle2({ ...puzzle2, isPopupOpen: true });
+    }
+  };
+
+  const goToPuzzle3 = () => {
+    if (!puzzle3.isAnswered) {
+      setPuzzle3({ ...puzzle3, isPopupOpen: true });
+    }
+  };
+  const goToPuzzle4 = () => {
+    if (!puzzle4.isAnswered) {
+      setPuzzle4({ ...puzzle4, isPopupOpen: true });
+    }
+  };
+  const goToPuzzle5 = () => {
+    if (!puzzle5.isAnswered) {
+      setPuzzle5({ ...puzzle5, isPopupOpen: true });
+    }
+  };
+
+  useEffect(() => {
+    //if all the puzzles have answered and the players has not opened a puzzle right now,
+    //then proceed him to next stage
+    if (
+      puzzle1.isAnswered &&
+      puzzle2.isAnswered &&
+      puzzle3.isAnswered &&
+      puzzle4.isAnswered &&
+      puzzle5.isAnswered &&
+      !puzzle1.isPopupOpen &&
+      !puzzle2.isPopupOpen &&
+      !puzzle3.isPopupOpen &&
+      !puzzle4.isPopupOpen &&
+      !puzzle5.isPopupOpen
+    ) {
+      setTimeout(() => {
+        changeStage("VaultOpened");
+      }, 2000); //go to next stage after 2 seconds
+    }
+    if (
+      puzzle1.isAnswered +
+        puzzle2.isAnswered +
+        puzzle3.isAnswered +
+        puzzle4.isAnswered ==
+      1
+    ) {
+      setProfessorText("There are three puzzles remaining!!");
+    } else if (
+      puzzle1.isAnswered +
+        puzzle2.isAnswered +
+        puzzle3.isAnswered +
+        puzzle4.isAnswered ==
+      2
+    ) {
+      setProfessorText("Two puzzle remaining!!");
+    } else if (
+      puzzle1.isAnswered +
+        puzzle2.isAnswered +
+        puzzle3.isAnswered +
+        puzzle4.isAnswered ==
+      3
+    ) {
+      setProfessorText("Only one puzzle remaining!!");
+    } else if (
+      puzzle1.isAnswered +
+        puzzle2.isAnswered +
+        puzzle3.isAnswered +
+        puzzle4.isAnswered ==
+      4
+    ) {
+      setProfessorText("All cleared!!, proceed to next stage");
+      document.getElementById("p1").style.display = "none";
+      document.getElementById("p2").style.display = "none";
+      document.getElementById("p3").style.display = "none";
+      document.getElementById("p4").style.display = "none";
+      document.getElementById("p5").style.display = "block";
+
+      setTimeout(() => {
+        setProfessorText("Ahh, One more remaining");
+      }, 2000);
+    }
+  }, [puzzle1, puzzle2, puzzle3, puzzle4]);
+
+  return (
+    <div className={`game-area`}>
+      <div
+        className={`background-content ${
+          puzzle1.isPopupOpen ||
+          puzzle2.isPopupOpen ||
+          puzzle3.isPopupOpen ||
+          puzzle4.isPopupOpen ||
+          puzzle5.isPopupOpen
+            ? "blurred"
+            : ""
+        }`}
+      >
+        <img
+          src={CorrectVaultImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            id="p1"
+            alt="invisible png"
+            onClick={goToPuzzle1}
+            style={{ cursor: "pointer", bottom: "220px", left: "460px" }}
+            className="invisible-img"
+          />
+        </div>
+
+        <div>
+          <img
+            src={invisiblePNG}
+            id="p2"
+            alt="invisible png"
+            onClick={goToPuzzle2}
+            style={{ cursor: "pointer", bottom: "131px", right: "490px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            id="p3"
+            alt="invisible png"
+            onClick={goToPuzzle3}
+            style={{ cursor: "pointer", top: "104px", right: "451px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p4"
+            onClick={goToPuzzle4}
+            style={{ cursor: "pointer", top: "204px", right: "451px" }}
+            className="invisible-img"
+          />
+        </div>
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p5"
+            onClick={goToPuzzle5}
+            style={{ cursor: "pointer", top: "480px", left: "821px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+
+      {puzzle1.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={puzzle1Image}
+          correctAnswer={10}
+          puzzleState={puzzle1}
+          changePuzzleState={setPuzzle1}
+        />
+      )}
+
+      {puzzle2.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={dummyMathPuzzle}
+          correctAnswer={10}
+          puzzleState={puzzle2}
+          changePuzzleState={setPuzzle2}
+        />
+      )}
+
+      {puzzle3.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={puzzle3Image}
+          correctAnswer={10}
+          puzzleState={puzzle3}
+          changePuzzleState={setPuzzle3}
+        />
+      )}
+      {puzzle4.isPopupOpen && (
+        <PopupPuzzle
+          imageUrl={puzzle4Image}
+          correctAnswer={10}
+          puzzleState={puzzle4}
+          changePuzzleState={setPuzzle4}
+        />
+      )}
+      {puzzle5.isPopupOpen && (
+        <MemberLoginPopup
+          memberName={"mufeez"}
+          puzzleState={puzzle5}
+          changePuzzleState={setPuzzle5}
+          password={1234}
+        />
+      )}
+    </div>
+  );
+};
+
+const VaultOpened = ({ changeStage }) => {
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  //Access the context
+
+  useEffect(() => {
+    setTimeout(() => {
+      setProfessorText("Collect All The Money");
+    }, 1000);
+  }, []);
+
+  const goToSecondVault = () => {
+    setProfessorText("Escape the Vault");
+
+    setTimeout(() => {
+      changeStage("escapeRoom");
+    }, 2000);
+  };
+  return (
+    <div className={`game-area`}>
+      <div className={`background-content`}>
+        <img
+          src={IntheVaultImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="firstPuzzle"
+            onClick={goToSecondVault}
+            style={{ cursor: "pointer", bottom: "440px", left: "750px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FinalStage = ({ changeStage , endGame }) => {
+  //puzzle will be implemented when sent
+  //Access the context
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+
+  const [puzzle1, setPuzzle1] = useState({
+    isAnswered: false,
+    isPopupOpen: false,
+  });
+
+  //Access the context
+
+  useEffect(() => {
+    setTimeout(() => {
+      setProfessorText("Solve the security puzzle");
+    }, 3000);
+  }, []);
+
+  const goToPuzzle1 = () => {
+    if (!puzzle1.isAnswered) {
+      setPuzzle1({ ...puzzle1, isPopupOpen: true });
+    }
+  };
+
+  useEffect(() => {
+    //if all the puzzles have answered and the players has not opened a puzzle right now,
+    //then proceed him to next stage
+    if (puzzle1.isAnswered && !puzzle1.isPopupOpen) {
+      setProfessorText("You have completed the Game");
+      endGame();
+    }
+    // if (puzzle1.isAnswered + puzzle2.isAnswered  == 1) {
+    //   setProfessorText("There are two puzzles remaining!!");
+    // } else if (
+    //   puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+    //   2
+    // ) {
+    //   setProfessorText("One puzzle remaining!!");
+    // } else if (
+    //   puzzle1.isAnswered + puzzle2.isAnswered + puzzle3.isAnswered ==
+    //   3
+    // ) {
+    //   setProfessorText("All cleared!!, proceed to next stage");
+    // }
+  }, [puzzle1]);
+
+  return (
+    <div className={`game-area`}>
+      <div
+        className={`background-content ${puzzle1.isPopupOpen ? "blurred" : ""}`}
+      >
+        <img
+          src={escapeRoomImage}
+          className={`bg-image`}
+          alt="background image of the stage"
+        />
+        <div>
+          <img
+            src={invisiblePNG}
+            alt="invisible png"
+            id="p1"
+            onClick={goToPuzzle1}
+            style={{ cursor: "pointer", top: "120px", right: "490px" }}
+            className="invisible-img"
+          />
+        </div>
+      </div>
+
+      {puzzle1.isPopupOpen && (
+        <PopupPuzzle
+          questionDescription={"WW91dmUgZm91bmQgdGhlIHJlYWwgdmF1bHQ="}
+          onlyText={
+            " Decrypt the following cypher and enter the decrypted String in the field:  WW91dmUgZm91bmQgdGhlIHJlYWwgdmF1bHQ="
+          }
+          correctAnswer={"Youve found the real vault"}
+          puzzleState={puzzle1}
+          changePuzzleState={setPuzzle1}
+        />
+      )}
+    </div>
+  );
+};
+
+const Sidebar = ({ teamName, description, timeMultiplier = 1, onTimeUp }) => {
+  const baseDuration = 2 * 60 * 60 * 1000; // 2 hours
+  const { professorText, setProfessorText } = useContext(ProfessorTextContext);
+  const [adjustedEndTime, setAdjustedEndTime] = useState(
+    Date.now() + baseDuration
+  );
+  const [lastMultiplierChange, setLastMultiplierChange] = useState(Date.now());
+  const [currentMultiplier, setCurrentMultiplier] = useState(1);
+
+  // Update timer when multiplier changes
+  useEffect(() => {
+    const now = Date.now();
+    const timeElapsed = now - lastMultiplierChange;
+    const remainingAtChange = adjustedEndTime - lastMultiplierChange;
+
+    // Calculate new remaining time based on multiplier change
+    const newRemainingTime = (remainingAtChange - timeElapsed) / timeMultiplier;
+    setAdjustedEndTime(now + newRemainingTime);
+    setLastMultiplierChange(now);
+    setCurrentMultiplier(timeMultiplier);
+  }, [timeMultiplier]);
+
+  const renderer = ({ hours, minutes, seconds, completed }) => {
+    if (completed) {
+      return <span className="timer">Time's up!</span>;
+    }
+    return (
+      <span className="timer">
+        {hours}:{minutes.toString().padStart(2, "0")}:
+        {seconds.toString().padStart(2, "0")}
+      </span>
+    );
+  };
+
+  const handleComplete = () => {
+    setProfessorText("Time's up! Game over!");
+    onTimeUp(); // Notify parent component that time is up
+  };
+
+  return (
+    <div className="sidebar">
+      <h2>Puzzle Challenge</h2>
+      <p>{description}</p>
+      <p className="team-name">Team: {teamName}</p>
+      <div className="timer-box">
+        <p className="timer-title">Time Left</p>
+        <Countdown
+          date={adjustedEndTime}
+          renderer={renderer}
+          key={`${adjustedEndTime}-${timeMultiplier}`}
+          onComplete={handleComplete}
+        />
+      </div>
+      <img
+        src={professorPNG}
+        alt="image of professor"
+        className="professor-img"
+      />
+      <div className="professor-textbox">{professorText}</div>
+    </div>
+  );
+};
+
+const MainArea = ({ onStageChange , onTimeUp }) => {
+  const [stage, setStage] = useState("escapeRoom"); // initial should be start
+
+  const handleStageChange = (newStage) => {
+    setStage(newStage);
+    onStageChange(newStage); // Notify parent about stage change
+  };
+
+  if (stage == "start") {
+    return <SurveillanceRoom changeStage={handleStageChange} />;
+  } else if (stage == "twoguards") {
+    return <TwoGuards changeStage={handleStageChange} />;
+  } else if (stage == "timeroom") {
+    return <TimeRoom changeStage={handleStageChange} />;
+  } else if (stage == "singleguard") {
+    return <SingleGuard changeStage={handleStageChange} />;
+  } else if (stage == "alarmroom") {
+    return <AlarmRoom changeStage={handleStageChange} />;
+  } else if (stage == "noguard") {
+    return <NoGuard changeStage={handleStageChange} />;
+  } else if (stage == "vaultchambers1") {
+    return <VaultChambers changeStage={handleStageChange} />;
+  } else if (stage == "misleadVault1") {
+    return <FirstMisleadVault changeStage={handleStageChange} />;
+  } else if (stage == "vaultchambers2") {
+    return <VaultChambers2 changeStage={handleStageChange} />;
+  } else if (stage == "misleadVault2") {
+    return <SecondMisleadVault changeStage={handleStageChange} />;
+  } else if (stage == "vaultchambers3") {
+    return <VaultChambers3 changeStage={handleStageChange} />;
+  } else if (stage == "correctVault") {
+    return <CorrectVault changeStage={handleStageChange} />;
+  } else if (stage == "VaultOpened") {
+    return <VaultOpened changeStage={handleStageChange} />;
+  }else if (stage == "escapeRoom") {
+    return <FinalStage changeStage={handleStageChange} endGame={onTimeUp} />;
+  }
+  
+  
+  else {
+    return <h1>Invalid Stage!!!!</h1>;
+  }
+};
+
+const Game = () => {
+  useConfirmRefresh(
+    true,
+    "Are you sure you want to leave the game? Progress will be lost!"
+  );
+  const navigate = useNavigate();
+
+  const [teamName, setTeamName] = useState("");
+  const [timeMultiplier, setTimeMultiplier] = useState(1);
+  const [gameOver, setGameOver] = useState(false);
+
+  // Check for existing game over state on component mount
+  useEffect(() => {
+    const storedTeamName = localStorage.getItem("teamName");
+    const gameCompleted = localStorage.getItem("gameCompleted") === "true";
+    const sessionActive = sessionStorage.getItem("gameActive") === "true";
+
+    if (gameCompleted && !sessionActive) {
+      setGameOver(true);
+      navigate("/game-over", { replace: true });
+      return;
+    }
+
+    if (storedTeamName) {
+      setTeamName(storedTeamName);
+    }
+
+    // Mark game as active in current session
+    sessionStorage.setItem("gameActive", "true");
+  }, [navigate]);
+
+  const handleStageChange = (newStage) => {
+    if (!gameOver) {
+      setTimeMultiplier(newStage === "vaultchambers" ? 2 : 1);
+    }
+  };
+
+  const handleTimeUp = () => {
+    // Set game over state in both localStorage and state
+    localStorage.setItem("gameCompleted", "true");
+    setGameOver(true);
+
+    // Clear session marker
+    sessionStorage.removeItem("gameActive");
+
+    navigate("/game-over", {
+      replace: true,
+      state: { timeUp: true },
+    });
+  };
+
+  if (gameOver) {
+    return (
+      <div className="app-container">
+        <div className="game-over-screen">
+          <h1>Game Over</h1>
+          <p>Time's up! Better luck next time!</p>
+          <button onClick={() => navigate("/", { replace: true })}>
+            Return to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-container">
+      <MainArea onStageChange={handleStageChange} 
+        onTimeUp={handleTimeUp}/>
+      <Sidebar
+        teamName={
+          teamName ||
+          "TeamName Not found! Login first or restart the game as your progress will not be stored"
+        }
+        description="Solve the puzzle to progress!"
+        timeMultiplier={timeMultiplier}
+        onTimeUp={handleTimeUp}
+      />
+    </div>
+  );
+};
+export default Game;
+
